@@ -5,7 +5,7 @@ export const loader = async ({ request }) => {
   const { billing, session } = await authenticate.admin(request);
 
   const url = new URL(request.url);
-  const returnUrl = `${url.protocol}//${url.host}/app`;
+  const returnUrl = `https://${url.host}/app`;
 
   console.log("[Billing Debug] shop:", session.shop);
   console.log("[Billing Debug] returnUrl:", returnUrl);

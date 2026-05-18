@@ -1,0 +1,22 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "2a548e84e42effb3371d4ad620b1a5d0"
+application_url = "https://chargebackready-production.up.railway.app"
+embedded = true
+name = "ChargebackReady2"
+
+[access_scopes]
+scopes = "read_orders,read_customers,read_fulfillments"
+
+[auth]
+redirect_urls = [
+  "https://chargebackready-production.up.railway.app/auth/callback",
+  "https://chargebackready-production.up.railway.app/auth/shopify/callback",
+  "https://chargebackready-production.up.railway.app/api/auth/callback",
+]
+
+[webhooks]
+api_version = "2026-04"
+
+[build]
+automatically_update_urls_on_dev = true

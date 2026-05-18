@@ -75,7 +75,17 @@ function getHighestRiskLevel(assessments) {
 }
 
 export const loader = async ({ request, params }) => {
-  const { admin } = await authenticate.admin(request);
+  let adminContext;
+  try {
+    adminContext = await authenticate.admin(request);
+  } catch (error) {
+    if (error instanceof Response) throw error;
+    return new Response(
+      JSON.stringify({ error: "auth_required", message: "Please refresh and try again" }),
+      { status: 401, headers: { "Content-Type": "application/json" } },
+    );
+  }
+  const { admin } = adminContext;
 
   const raw = params.orderId.replace(/^#/, "").trim();
 

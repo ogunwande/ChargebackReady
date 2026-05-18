@@ -2,7 +2,7 @@
 
 client_id = "c44c1ddc7b39dd7caeff02a2590ce7f1"
 name = "ChargebackReady"
-application_url = "https://admin.shopify.com/store/eleven45ventures/apps/chargebackready/app"
+application_url = "https://chargebackready-production.up.railway.app"
 embedded = true
 
 [build]
@@ -17,6 +17,9 @@ scopes = "read_customers,read_fulfillments,read_orders"
 
 [auth]
 redirect_urls = [
+  "https://chargebackready-production.up.railway.app/auth/callback",
+  "https://chargebackready-production.up.railway.app/auth/shopify/callback",
+  "https://chargebackready-production.up.railway.app/api/auth/callback",
   "https://admin.shopify.com/store/eleven45ventures/apps/chargebackready/app/auth/callback",
   "https://admin.shopify.com/store/eleven45ventures/apps/chargebackready/app/auth/shopify/callback",
   "https://admin.shopify.com/store/eleven45ventures/apps/chargebackready/app/api/auth/callback",

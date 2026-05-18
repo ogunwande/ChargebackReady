@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { useFetcher, useLoaderData } from "react-router";
 import { authenticate } from "../shopify.server";
 import { hasActiveSubscription } from "../utils/subscription.server";
@@ -20,6 +20,23 @@ export default function Index() {
   const fetcher = useFetcher();
   const inputRef = useRef(null);
   const [downloading, setDownloading] = useState(false);
+
+  const retried = useRef(false);
+
+  useEffect(() => {
+    if (
+      fetcher.data?.error === "auth_required" &&
+      !retried.current &&
+      inputRef.current?.value
+    ) {
+      retried.current = true;
+      const val = inputRef.current.value.replace(/^#/, "").trim();
+      fetcher.load(`/api/order-preview/${encodeURIComponent(val)}`);
+    }
+    if (fetcher.data && fetcher.data.error !== "auth_required") {
+      retried.current = false;
+    }
+  }, [fetcher.data]);
 
   const isLoading = fetcher.state === "loading";
   const result = fetcher.data && !fetcher.data.error ? fetcher.data : null;
@@ -165,7 +182,10 @@ export default function Index() {
                     Download unlimited chargeback evidence packages for $19/month.
                     Keep 100% of every dispute you win.
                   </s-paragraph>
-                  <s-button slot="primaryAction" href="/app/billing">
+                  <s-button
+                    slot="primaryAction"
+                    onClick={() => window.open('/app/billing', '_top')}
+                  >
                     Start free trial — no charge for 7 days
                   </s-button>
                 </s-banner>

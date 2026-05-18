@@ -4,24 +4,28 @@ const ORDER_EVIDENCE_QUERY = `#graphql
   query GetOrderEvidence($orderId: ID!) {
     order(id: $orderId) {
       id
-      orderNumber
       name
       createdAt
-      totalPriceSet {
-        shopMoney {
-          amount
-          currencyCode
-        }
-      }
+      note
+      clientIp
+
       displayFinancialStatus
       displayFulfillmentStatus
-      note
-      customerIp
+
+      totalPriceSet {
+        shopMoney { amount currencyCode }
+      }
+
       paymentGatewayNames
 
-      transactions {
+      transactions(first: 10) {
         kind
         status
+        gateway
+        formattedGateway
+        amountSet {
+          shopMoney { amount currencyCode }
+        }
         paymentDetails {
           ... on CardPaymentDetails {
             avsResultCode
@@ -36,13 +40,14 @@ const ORDER_EVIDENCE_QUERY = `#graphql
         }
       }
 
-      risk {
-        assessments {
-          riskLevel
-          facts {
-            description
-            sentiment
-          }
+      riskAssessments {
+        riskLevel
+        facts {
+          description
+          sentiment
+        }
+        provider {
+          title
         }
       }
 
@@ -82,14 +87,14 @@ const ORDER_EVIDENCE_QUERY = `#graphql
       }
 
       fulfillments {
-        trackingCompany
-        trackingInfo {
-          number
-          url
-        }
         status
         createdAt
         estimatedDeliveryAt
+        trackingInfo {
+          company
+          number
+          url
+        }
       }
 
       lineItems(first: 50) {
@@ -100,16 +105,10 @@ const ORDER_EVIDENCE_QUERY = `#graphql
             quantity
             sku
             originalUnitPriceSet {
-              shopMoney {
-                amount
-                currencyCode
-              }
+              shopMoney { amount currencyCode }
             }
             totalDiscountSet {
-              shopMoney {
-                amount
-                currencyCode
-              }
+              shopMoney { amount currencyCode }
             }
           }
         }

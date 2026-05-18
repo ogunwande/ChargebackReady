@@ -31,7 +31,7 @@ export default function Index() {
     ) {
       retried.current = true;
       const val = inputRef.current.value.replace(/^#/, "").trim();
-      fetcher.load(`/api/order-preview/${encodeURIComponent(val)}`);
+      fetcher.load(`/app/api/order-preview/${encodeURIComponent(val)}`);
     }
     if (fetcher.data && fetcher.data.error !== "auth_required") {
       retried.current = false;
@@ -46,7 +46,7 @@ export default function Index() {
     const val = inputRef.current?.value || "";
     const raw = val.replace(/^#/, "").trim();
     if (!raw) return;
-    fetcher.load(`/api/order-preview/${encodeURIComponent(raw)}`);
+    fetcher.load(`/app/api/order-preview/${encodeURIComponent(raw)}`);
   }, [fetcher]);
 
   async function handleDownload() {

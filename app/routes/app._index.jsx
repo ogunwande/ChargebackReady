@@ -1,331 +1,193 @@
-import { useEffect } from "react";
-import { useFetcher } from "react-router";
-import { useAppBridge } from "@shopify/app-bridge-react";
-import { boundary } from "@shopify/shopify-app-react-router/server";
+import { useRef, useState, useCallback } from "react";
+import { useFetcher, useLoaderData } from "react-router";
 import { authenticate } from "../shopify.server";
+import { hasActiveSubscription } from "../utils/subscription.server";
 
 export const loader = async ({ request }) => {
-  await authenticate.admin(request);
-
-  return null;
+  const { session } = await authenticate.admin(request);
+  const subscribed = await hasActiveSubscription(session.shop);
+  return { subscribed };
 };
 
-export const action = async ({ request }) => {
-  const { admin } = await authenticate.admin(request);
-  const color = ["Red", "Orange", "Yellow", "Green"][
-    Math.floor(Math.random() * 4)
-  ];
-  const response = await admin.graphql(
-    `#graphql
-      mutation populateProduct($product: ProductCreateInput!) {
-        productCreate(product: $product) {
-          product {
-            id
-            title
-            handle
-            status
-            variants(first: 10) {
-              edges {
-                node {
-                  id
-                  price
-                  barcode
-                  createdAt
-                }
-              }
-            }
-            demoInfo: metafield(namespace: "$app", key: "demo_info") {
-              jsonValue
-            }
-          }
-        }
-      }`,
-    {
-      variables: {
-        product: {
-          title: `${color} Snowboard`,
-          metafields: [
-            {
-              namespace: "$app",
-              key: "demo_info",
-              value: "Created by React Router Template",
-            },
-          ],
-        },
-      },
-    },
-  );
-  const responseJson = await response.json();
-  const product = responseJson.data.productCreate.product;
-  const variantId = product.variants.edges[0].node.id;
-  const variantResponse = await admin.graphql(
-    `#graphql
-    mutation shopifyReactRouterTemplateUpdateVariant($productId: ID!, $variants: [ProductVariantsBulkInput!]!) {
-      productVariantsBulkUpdate(productId: $productId, variants: $variants) {
-        productVariants {
-          id
-          price
-          barcode
-          createdAt
-        }
-      }
-    }`,
-    {
-      variables: {
-        productId: product.id,
-        variants: [{ id: variantId, price: "100.00" }],
-      },
-    },
-  );
-  const variantResponseJson = await variantResponse.json();
-  const metaobjectResponse = await admin.graphql(
-    `#graphql
-    mutation shopifyReactRouterTemplateUpsertMetaobject($handle: MetaobjectHandleInput!, $metaobject: MetaobjectUpsertInput!) {
-      metaobjectUpsert(handle: $handle, metaobject: $metaobject) {
-        metaobject {
-          id
-          handle
-          title: field(key: "title") {
-            jsonValue
-          }
-          description: field(key: "description") {
-            jsonValue
-          }
-        }
-        userErrors {
-          field
-          message
-        }
-      }
-    }`,
-    {
-      variables: {
-        handle: {
-          type: "$app:example",
-          handle: "demo-entry",
-        },
-        metaobject: {
-          fields: [
-            { key: "title", value: "Demo Entry" },
-            {
-              key: "description",
-              value:
-                "This metaobject was created by the Shopify app template to demonstrate the metaobject API.",
-            },
-          ],
-        },
-      },
-    },
-  );
-  const metaobjectResponseJson = await metaobjectResponse.json();
-
-  return {
-    product: responseJson.data.productCreate.product,
-    variant: variantResponseJson.data.productVariantsBulkUpdate.productVariants,
-    metaobject: metaobjectResponseJson.data.metaobjectUpsert.metaobject,
-  };
-};
+function RiskBadge({ level }) {
+  const tone =
+    level === "High" ? "critical" : level === "Medium" ? "warning" : "success";
+  return <s-badge tone={tone}>{level}</s-badge>;
+}
 
 export default function Index() {
+  const { subscribed } = useLoaderData();
   const fetcher = useFetcher();
-  const shopify = useAppBridge();
-  const isLoading =
-    ["loading", "submitting"].includes(fetcher.state) &&
-    fetcher.formMethod === "POST";
+  const inputRef = useRef(null);
+  const [downloading, setDownloading] = useState(false);
 
-  useEffect(() => {
-    if (fetcher.data?.product?.id) {
-      shopify.toast.show("Product created");
+  const isLoading = fetcher.state === "loading";
+  const result = fetcher.data && !fetcher.data.error ? fetcher.data : null;
+  const hasError = fetcher.data?.error != null;
+
+  const handleSearch = useCallback(() => {
+    const val = inputRef.current?.value || "";
+    const raw = val.replace(/^#/, "").trim();
+    if (!raw) return;
+    fetcher.load(`/api/order-preview/${encodeURIComponent(raw)}`);
+  }, [fetcher]);
+
+  async function handleDownload() {
+    if (!result) return;
+    setDownloading(true);
+    try {
+      const response = await fetch(`/app/orders/${result.numericId}/pdf`);
+      if (!response.ok) {
+        alert("Failed to generate PDF. Please try again.");
+        return;
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `chargeback-evidence-${result.orderNumber.replace("#", "")}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      alert("Failed to generate PDF. Please try again.");
+    } finally {
+      setDownloading(false);
     }
-  }, [fetcher.data?.product?.id, shopify]);
-  const generateProduct = () => fetcher.submit({}, { method: "POST" });
+  }
 
   return (
-    <s-page heading="Shopify app template">
-      <s-button slot="primary-action" onClick={generateProduct}>
-        Generate a product
-      </s-button>
+    <s-page heading="Chargeback Evidence Builder">
+      <s-paragraph slot="subtitle">
+        Generate a professional dispute evidence package for any order in 60 seconds.
+        You keep 100% of every win.
+      </s-paragraph>
 
-      <s-section heading="Congrats on creating a new Shopify app 🎉">
-        <s-paragraph>
-          This embedded app template uses{" "}
-          <s-link
-            href="https://shopify.dev/docs/apps/tools/app-bridge"
-            target="_blank"
-          >
-            App Bridge
-          </s-link>{" "}
-          interface examples like an{" "}
-          <s-link href="/app/additional">additional page in the app nav</s-link>
-          , as well as an{" "}
-          <s-link
-            href="https://shopify.dev/docs/api/admin-graphql"
-            target="_blank"
-          >
-            Admin GraphQL
-          </s-link>{" "}
-          mutation demo, to provide a starting point for app development.
-        </s-paragraph>
+      {/* Section 2 — How it works */}
+      <s-section heading="How it works">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "32px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div style={{ fontSize: "20px", fontWeight: "700", color: "#1a1a1a" }}>1</div>
+            <div style={{ fontWeight: "600", fontSize: "14px" }}>Enter your order ID</div>
+            <div style={{ color: "#6d7175", fontSize: "13px" }}>Find it in Shopify Admin under Orders</div>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div style={{ fontSize: "20px", fontWeight: "700", color: "#1a1a1a" }}>2</div>
+            <div style={{ fontWeight: "600", fontSize: "14px" }}>We compile all evidence from Shopify</div>
+            <div style={{ color: "#6d7175", fontSize: "13px" }}>AVS, CVV, risk score, tracking, addresses and more</div>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div style={{ fontSize: "20px", fontWeight: "700", color: "#1a1a1a" }}>3</div>
+            <div style={{ fontWeight: "600", fontSize: "14px" }}>Download your PDF and submit to your bank</div>
+            <div style={{ color: "#6d7175", fontSize: "13px" }}>Works with any payment processor</div>
+          </div>
+        </div>
       </s-section>
-      <s-section heading="Get started with products">
-        <s-paragraph>
-          Generate a product with GraphQL and get the JSON output for that
-          product. Learn more about the{" "}
-          <s-link
-            href="https://shopify.dev/docs/api/admin-graphql/latest/mutations/productCreate"
-            target="_blank"
-          >
-            productCreate
-          </s-link>{" "}
-          mutation in our API references. Includes a product{" "}
-          <s-link
-            href="https://shopify.dev/docs/apps/build/custom-data/metafields"
-            target="_blank"
-          >
-            metafield
-          </s-link>{" "}
-          and{" "}
-          <s-link
-            href="https://shopify.dev/docs/apps/build/custom-data/metaobjects"
-            target="_blank"
-          >
-            metaobject
-          </s-link>
-          .
-        </s-paragraph>
-        <s-stack direction="inline" gap="base">
-          <s-button
-            onClick={generateProduct}
-            {...(isLoading ? { loading: true } : {})}
-          >
-            Generate a product
-          </s-button>
-          {fetcher.data?.product && (
-            <s-button
-              onClick={() => {
-                shopify.intents.invoke?.("edit:shopify/Product", {
-                  value: fetcher.data?.product?.id,
-                });
-              }}
-              target="_blank"
-              variant="tertiary"
-            >
-              Edit product
-            </s-button>
+
+      {/* Section 3 — Order lookup */}
+      <s-section heading="Generate evidence package">
+        <s-stack direction="block" gap="base">
+          <s-text-field
+            ref={inputRef}
+            label="Order ID"
+            placeholder="#1042"
+            helpText="Enter the order number (e.g. #1042). Find it in Shopify Admin → Orders."
+            disabled={isLoading}
+            autoComplete="off"
+          />
+
+          {hasError && (
+            <s-banner tone="critical">
+              <s-paragraph>
+                Order not found. Check the order ID and try again. Make sure you are
+                using the order ID (a number) not the order name.
+              </s-paragraph>
+            </s-banner>
           )}
+
+          <s-button
+            variant="primary"
+            onClick={handleSearch}
+            loading={isLoading}
+            disabled={isLoading}
+          >
+            {isLoading ? "Loading order data..." : "Generate evidence package"}
+          </s-button>
         </s-stack>
-        {fetcher.data?.product && (
-          <s-section heading="productCreate mutation">
-            <s-stack direction="block" gap="base">
-              <s-box
-                padding="base"
-                borderWidth="base"
-                borderRadius="base"
-                background="subdued"
-              >
-                <pre style={{ margin: 0 }}>
-                  <code>{JSON.stringify(fetcher.data.product, null, 2)}</code>
-                </pre>
-              </s-box>
+      </s-section>
 
-              <s-heading>productVariantsBulkUpdate mutation</s-heading>
-              <s-box
-                padding="base"
-                borderWidth="base"
-                borderRadius="base"
-                background="subdued"
-              >
-                <pre style={{ margin: 0 }}>
-                  <code>{JSON.stringify(fetcher.data.variant, null, 2)}</code>
-                </pre>
-              </s-box>
-
-              <s-heading>metaobjectUpsert mutation</s-heading>
-              <s-box
-                padding="base"
-                borderWidth="base"
-                borderRadius="base"
-                background="subdued"
-              >
-                <pre style={{ margin: 0 }}>
-                  <code>
-                    {JSON.stringify(fetcher.data.metaobject, null, 2)}
-                  </code>
-                </pre>
-              </s-box>
+      {/* Section 4 — Result card */}
+      {result && (
+        <s-section heading="Order found — ready to generate">
+          <s-stack direction="block" gap="base">
+            <s-stack direction="block" gap="tight">
+              <s-stack direction="inline" gap="base">
+                <s-text fontWeight="bold">Order:</s-text>
+                <s-text>{result.orderNumber}</s-text>
+              </s-stack>
+              <s-stack direction="inline" gap="base">
+                <s-text fontWeight="bold">Customer:</s-text>
+                <s-text>{result.customerName}</s-text>
+              </s-stack>
+              <s-stack direction="inline" gap="base">
+                <s-text fontWeight="bold">Date:</s-text>
+                <s-text>{result.orderDate}</s-text>
+              </s-stack>
+              <s-stack direction="inline" gap="base">
+                <s-text fontWeight="bold">Total:</s-text>
+                <s-text>{result.amount}</s-text>
+              </s-stack>
+              <s-stack direction="inline" gap="base">
+                <s-text fontWeight="bold">Risk level:</s-text>
+                <RiskBadge level={result.riskLevel} />
+              </s-stack>
+              <s-stack direction="inline" gap="base">
+                <s-text fontWeight="bold">Fulfillment:</s-text>
+                <s-text>{result.fulfillmentStatus}</s-text>
+              </s-stack>
             </s-stack>
-          </s-section>
-        )}
-      </s-section>
 
-      <s-section slot="aside" heading="App template specs">
-        <s-paragraph>
-          <s-text>Framework: </s-text>
-          <s-link href="https://reactrouter.com/" target="_blank">
-            React Router
-          </s-link>
-        </s-paragraph>
-        <s-paragraph>
-          <s-text>Interface: </s-text>
-          <s-link
-            href="https://shopify.dev/docs/api/app-home/using-polaris-components"
-            target="_blank"
-          >
-            Polaris web components
-          </s-link>
-        </s-paragraph>
-        <s-paragraph>
-          <s-text>API: </s-text>
-          <s-link
-            href="https://shopify.dev/docs/api/admin-graphql"
-            target="_blank"
-          >
-            GraphQL
-          </s-link>
-        </s-paragraph>
-        <s-paragraph>
-          <s-text>Custom data: </s-text>
-          <s-link
-            href="https://shopify.dev/docs/apps/build/custom-data"
-            target="_blank"
-          >
-            Metafields &amp; metaobjects
-          </s-link>
-        </s-paragraph>
-        <s-paragraph>
-          <s-text>Database: </s-text>
-          <s-link href="https://www.prisma.io/" target="_blank">
-            Prisma
-          </s-link>
-        </s-paragraph>
-      </s-section>
+            {subscribed ? (
+              <s-button
+                variant="primary"
+                onClick={handleDownload}
+                loading={downloading}
+                disabled={downloading}
+              >
+                {downloading ? "Generating PDF..." : "Download PDF Evidence Package"}
+              </s-button>
+            ) : (
+              <>
+                <s-banner tone="info">
+                  <s-paragraph slot="heading">Start your 7-day free trial</s-paragraph>
+                  <s-paragraph>
+                    Download unlimited chargeback evidence packages for $19/month.
+                    Keep 100% of every dispute you win.
+                  </s-paragraph>
+                  <s-button slot="primaryAction" href="/app/billing">
+                    Start free trial — no charge for 7 days
+                  </s-button>
+                </s-banner>
+                <s-tooltip content="Start your free trial to download evidence packages">
+                  <s-button variant="primary" disabled>
+                    Download PDF Evidence Package
+                  </s-button>
+                </s-tooltip>
+              </>
+            )}
+          </s-stack>
+        </s-section>
+      )}
 
-      <s-section slot="aside" heading="Next steps">
-        <s-unordered-list>
-          <s-list-item>
-            Build an{" "}
-            <s-link
-              href="https://shopify.dev/docs/apps/getting-started/build-app-example"
-              target="_blank"
-            >
-              example app
-            </s-link>
-          </s-list-item>
-          <s-list-item>
-            Explore Shopify&apos;s API with{" "}
-            <s-link
-              href="https://shopify.dev/docs/apps/tools/graphiql-admin-api"
-              target="_blank"
-            >
-              GraphiQL
-            </s-link>
-          </s-list-item>
-        </s-unordered-list>
+      {/* Section 5 — Trust statement */}
+      <s-section>
+        <s-text tone="subdued">
+          ChargebackReady only reads your order data — it never writes to your store,
+          never processes refunds, and never touches your payment settings.
+          Works with Shopify Payments, PayPal, Stripe, Klarna, and any other processor.
+        </s-text>
       </s-section>
     </s-page>
   );
 }
-
-export const headers = (headersArgs) => {
-  return boundary.headers(headersArgs);
-};

@@ -1,52 +1,28 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "124ac13b172739eb14c62b102dccd408"
+client_id = "c44c1ddc7b39dd7caeff02a2590ce7f1"
 name = "ChargebackReady"
-application_url = "https://example.com"
+application_url = "https://admin.shopify.com/store/eleven45ventures/apps/chargebackready/app"
 embedded = true
 
-[access_scopes]
-# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "write_products,write_metaobjects,write_metaobject_definitions"
-
-[product.metafields.app.demo_info]
-type = "single_line_text_field"
-name = "Demo Source Info"
-description = "Tracks products created by the Shopify app template for development"
-
-  [product.metafields.app.demo_info.access]
-  admin = "merchant_read_write"
-
-[metaobjects.app.example]
-name = "Example"
-description = "An example metaobject definition created by this template"
-
-  [metaobjects.app.example.access]
-  admin = "merchant_read_write"
-
-[metaobjects.app.example.fields.title]
-name = "Title"
-type = "single_line_text_field"
-required = true
-
-[metaobjects.app.example.fields.description]
-name = "Description"
-type = "multi_line_text_field"
+[build]
+automatically_update_urls_on_dev = true
 
 [webhooks]
 api_version = "2026-07"
 
-  [[webhooks.subscriptions]]
-  uri = "/webhooks/app/uninstalled"
-  topics = [ "app/uninstalled" ]
-
-  [[webhooks.subscriptions]]
-  uri = "/webhooks/app/scopes_update"
-  topics = [ "app/scopes_update" ]
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_customers,read_fulfillments,read_orders"
 
 [auth]
-redirect_urls = [ "https://example.com/api/auth" ]
+redirect_urls = [
+  "https://admin.shopify.com/store/eleven45ventures/apps/chargebackready/app/auth/callback",
+  "https://admin.shopify.com/store/eleven45ventures/apps/chargebackready/app/auth/shopify/callback",
+  "https://admin.shopify.com/store/eleven45ventures/apps/chargebackready/app/api/auth/callback",
+  "https://eleven45ventures.myshopify.com/admin/apps/chargeback-ready",
+  "http://localhost:3457/auth/callback",
+  "http://localhost:3457/auth/shopify/callback",
+  "http://localhost:3457/api/auth/callback",
+]
 
-[build]
-include_config_on_deploy = true
-automatically_update_urls_on_dev = true

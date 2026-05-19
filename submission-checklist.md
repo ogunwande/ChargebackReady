@@ -1,102 +1,135 @@
-# ChargebackReady — Shopify App Store Submission Checklist
+# Shopify App Store Submission Checklist
+## ChargebackReady — May 2026
 
 ---
 
-## Technical Requirements
+## TECHNICAL REQUIREMENTS
 
-- [ ] App loads correctly inside Shopify Admin (embedded, no blank screens)
-- [ ] App uses Shopify App Bridge for embedded behaviour
-- [ ] All API calls use versioned Shopify Admin API (currently `2026-07`)
-- [ ] OAuth flow works correctly — install, authenticate, redirect back to app
-- [ ] App handles session expiry gracefully (redirects to re-auth)
-- [ ] App does not request unnecessary API scopes
-- [ ] Scopes declared in `shopify.app.toml` match scopes requested during OAuth
-- [ ] App passes Shopify's automated security scan (no XSS, injection vulnerabilities)
-- [ ] App is deployed to a stable production URL (not localhost, not a tunnel)
-- [ ] HTTPS enforced on all routes
-- [ ] Webhook endpoints return 200 within 5 seconds
-- [ ] App handles uninstall webhook and cleans up session data
-- [ ] Billing is implemented via Shopify Billing API (not external payment links)
-- [ ] `isTest: true` removed from all billing calls before submission
-- [ ] Free trial configured correctly (7 days)
-- [ ] App works on mobile (Shopify Admin mobile view)
+### App Infrastructure
+- [x] App is deployed and accessible at a public HTTPS URL
+- [x] App uses Shopify OAuth for authentication (no custom login)
+- [x] App uses a supported Shopify API version (2026-04)
+- [x] Session storage implemented (PostgreSQL via Prisma)
+- [x] App handles `app/uninstalled` webhook to clean up session data
+- [x] App handles `app/scopes_update` webhook
+- [x] App handles `app/subscriptions/update` webhook (billing)
+- [x] All API calls use HTTPS
+- [x] App embedded in Shopify Admin (embedded: true in toml)
+- [x] App passes Shopify's security headers via `boundary.headers()`
+- [x] No use of deprecated API fields (riskAssessments used, not risk.assessments)
 
----
+### Billing
+- [x] Billing implemented via Shopify Billing API (not external payment)
+- [x] Free trial configured (7 days)
+- [x] Plan name matches exactly between `shopify.server.js` and `billing.require()` calls
+- [ ] **Remove `isTest: true` from billing before going live** — production stores will reject this
+- [x] `BillingInterval.Every30Days` configured
+- [x] Subscription webhook handler present
 
-## Listing Requirements
+### OAuth Scopes
+- [x] Only requesting scopes actually used: `read_orders`, `read_customers`, `read_fulfillments`
+- [x] No write scopes requested
+- [x] Scopes declared in `shopify.app.chargebackready.toml`
 
-- [ ] App name finalised: **ChargebackReady — Dispute Evidence**
-- [ ] Tagline written (under 100 characters) ✓ — see `app-store-listing.md`
-- [ ] Short description written (under 100 words) ✓ — see `app-store-listing.md`
-- [ ] Long description written (400–500 words) ✓ — see `app-store-listing.md`
-- [ ] Key benefits bullet points written ✓ — see `app-store-listing.md`
-- [ ] App icon created (1024×1024 SVG) ✓ — see `app-icon.svg`
-- [ ] App icon exported as PNG 1024×1024 (Shopify requires PNG, not SVG)
-- [ ] Screenshots taken — minimum 3, recommended 5 (1280×800 or 2560×1600)
-  - [ ] Screenshot 1: Home page with order lookup
-  - [ ] Screenshot 2: Order result card showing risk badge and data
-  - [ ] Screenshot 3: Generated PDF open in browser (pages 1 and 2)
-  - [ ] Screenshot 4: Upgrade/billing banner (unsubscribed state)
-  - [ ] Screenshot 5: PDF download confirmation
-- [ ] Demo video (optional but recommended — 30 to 60 seconds showing full flow)
-- [ ] Category selected: Store management / Orders and shipping
-- [ ] Tags added: chargeback, dispute, evidence, fraud, payments
+### Redirect URLs
+- [x] All redirect URLs registered in Partner Dashboard
+- [x] All redirect URLs use HTTPS
+- [x] Redirect URLs match Railway production domain
+
+### Performance
+- [x] GraphQL queries include retry logic for THROTTLED errors
+- [ ] Verify app loads within 3 seconds in Shopify Admin on a slow connection
 
 ---
 
-## Legal Requirements
+## LISTING REQUIREMENTS
 
-- [ ] Privacy policy written ✓ — see `privacy-policy.md`
-- [ ] Privacy policy hosted at a public URL (e.g. `chargebackready.up.railway.app/privacy` or separate page)
-- [ ] Privacy policy URL entered in Partner Dashboard app settings
-- [ ] Terms of service written and hosted (Shopify requires this for App Store)
-- [ ] GDPR compliance confirmed — no unnecessary data retention
-- [ ] App does not collect data beyond what is declared in the privacy policy
-- [ ] Data handling complies with Shopify's Partner Program Agreement
+### App Identity
+- [x] App name: "ChargebackReady — Dispute Evidence"
+- [x] Tagline written (under 100 characters)
+- [x] Short description written (under 100 words)
+- [x] Long description written (400–500 words)
+- [x] Key benefits written (5 bullet points)
+- [x] App icon created (`app-icon.svg`)
+- [ ] **Convert app-icon.svg to PNG 1024×1024** — Shopify requires PNG format, not SVG
+- [ ] **Take 3–6 screenshots** at 1280×800 or 2560×1600 pixels
+  - [ ] Screenshot 1: Main order lookup screen
+  - [ ] Screenshot 2: Order found / preview card
+  - [ ] Screenshot 3: PDF cover page
+  - [ ] Screenshot 4: PDF evidence detail page
+  - [ ] Screenshot 5: Trial/billing banner (optional but recommended)
+- [ ] Optionally record a demo video (30–60 seconds showing the full flow)
 
----
-
-## Partner Dashboard Settings (do these manually)
-
-- [ ] App URL set to production Railway URL
-- [ ] Allowed redirect URLs updated to production Railway URL
-- [ ] Privacy policy URL entered
-- [ ] App support email entered: ogunwandetobi09@gmail.com
-- [ ] App category selected
-- [ ] Listing copy pasted in (from `app-store-listing.md`)
-- [ ] App icon uploaded (PNG 1024×1024)
-- [ ] Screenshots uploaded
-- [ ] Pricing plan configured: $19/month, 7-day trial
+### Pricing
+- [x] Pricing documented ($19/month, 7-day free trial)
+- [ ] Confirm pricing entered correctly in Partner Dashboard
 
 ---
 
-## Things To Do Manually Before Submitting
+## LEGAL REQUIREMENTS
 
-- [ ] Convert `app-icon.svg` to PNG 1024×1024 (use Figma, Canva, or online SVG-to-PNG converter)
-- [ ] Take 3–5 screenshots of the live app on your Railway URL
-- [ ] Write and host a Terms of Service page
-- [ ] Host privacy policy at a public URL
-- [ ] Remove `isTest: true` from `app/routes/app.billing.jsx` and `app/shopify.server.js`
-- [ ] Test full billing flow on production URL with a real Shopify store
-- [ ] Test PDF download on production URL
-- [ ] Reinstall app on dev store using production Railway URL
-- [ ] Submit for Shopify review in Partner Dashboard
+### Privacy Policy
+- [x] Privacy policy written (`privacy-policy.md`)
+- [ ] **Host the privacy policy at a public URL** — add a `/privacy` route to the Railway app or host on a separate page
+- [ ] Add that URL to your Partner Dashboard app listing
+- [ ] Privacy policy must be accessible without logging in
 
----
+### Terms of Service (optional but recommended)
+- [ ] Write a Terms of Service document
+- [ ] Host it at a public URL
+- [ ] Add to Partner Dashboard
 
-## Pre-Submission Test Run
+### GDPR Mandatory Webhooks (required by Shopify for all apps)
+- [ ] Implement `customers/data_request` webhook handler (return 200 — no data stored)
+- [ ] Implement `customers/redact` webhook handler (return 200 — no data stored)
+- [ ] Implement `shop/redact` webhook handler (delete session row for the shop)
+- [ ] Register all three GDPR webhooks in `shopify.app.chargebackready.toml`
 
-Walk through this exact flow on the live Railway URL before submitting:
-
-1. Install app on a development store
-2. Enter a real order ID — result card appears with correct data
-3. Click "Start free trial" — Shopify billing confirmation page loads
-4. Approve billing — redirected back to app
-5. Click "Download PDF Evidence Package" — PDF downloads
-6. Open PDF — all 4 sections have real data, no blank fields
-7. Uninstall app — session data is removed from database
-8. Reinstall app — OAuth flow runs cleanly
+> **Note:** These three GDPR webhooks are mandatory for App Store submission. Since ChargebackReady doesn't persistently store order or customer data, the first two handlers can simply return 200 OK. The `shop/redact` handler should delete the session row for that shop from the database.
 
 ---
 
-*Generated by Claude Code for ChargebackReady by Eleven45 Ventures*
+## PARTNER DASHBOARD TASKS (manual steps)
+
+- [ ] Log in at partners.shopify.com
+- [ ] Go to Apps → ChargebackReady2 → App setup
+- [ ] Fill in app listing using content from `app-store-listing.md`
+- [ ] Upload app icon (PNG 1024×1024)
+- [ ] Upload screenshots (minimum 3)
+- [ ] Set pricing: $19/month with 7-day free trial
+- [ ] Enter privacy policy URL
+- [ ] Enter support email: ogunwandetobi09@gmail.com
+- [ ] Set app category: Store management
+- [ ] Confirm all redirect URLs are registered
+- [ ] Remove `isTest: true` from billing before submitting for review
+- [ ] Click "Submit for review"
+
+---
+
+## PRE-SUBMISSION TESTING
+
+- [ ] Install the app fresh on a development store
+- [ ] Complete the OAuth flow — confirm landing on app home screen
+- [ ] Enter a real order number — confirm order preview loads
+- [ ] Confirm "Start free trial" banner appears (unsubscribed state)
+- [ ] Click "Start free trial" — confirm Shopify billing confirmation page loads
+- [ ] Approve the trial — confirm redirect back to app
+- [ ] Enter order number again — confirm "Download PDF" button appears
+- [ ] Download a PDF — confirm it opens with real order data
+- [ ] Uninstall the app — confirm session is cleaned up
+- [ ] Reinstall — confirm OAuth works cleanly again
+
+---
+
+## REMAINING TASKS BEFORE SUBMISSION (priority order)
+
+1. **Remove `isTest: true`** from `app/routes/app.billing.jsx` — required for production
+2. **Convert app-icon.svg to PNG 1024×1024** — use Figma, Inkscape, or any online SVG-to-PNG tool
+3. **Host privacy policy at a public URL** — add `/privacy` route to the app returning the policy HTML
+4. **Implement GDPR webhooks** — three mandatory handlers; two return 200, one deletes session
+5. **Take app store screenshots** — real screenshots from the live Railway app
+6. **Fill in Partner Dashboard listing** — paste from `app-store-listing.md`
+
+---
+
+*Generated May 2026 — verify against current requirements at shopify.dev/docs/apps/store*

@@ -1,100 +1,93 @@
-# ChargebackReady — App Store Listing Copy
+# App Store Listing — ChargebackReady
 
 ---
 
 ## App Name
 ChargebackReady — Dispute Evidence
 
----
-
-## Tagline (98 characters)
-Generate a professional chargeback evidence package in 60 seconds. Keep 100% of every win.
-
----
+## Tagline (under 100 characters)
+Generate a professional chargeback evidence package in 60 seconds
 
 ## Short Description (under 100 words)
 
-Stop losing chargebacks because your evidence is weak. ChargebackReady compiles every piece of dispute evidence Shopify holds — AVS results, CVV verification, IP address, risk score, delivery tracking, and customer history — into a professional PDF in 60 seconds. You review the exact document before submitting it to your bank. Flat $19/month. No commission. No success fees. Works with Shopify Payments, PayPal, Stripe, Klarna, and any other processor. Read-only access — we never write to your store or touch your payments. 7-day free trial, cancel anytime.
+Stop losing chargebacks because you couldn't organise your evidence in time. ChargebackReady pulls every piece of dispute-winning data directly from your Shopify order — AVS result, CVV result, IP address, risk score, tracking proof, and full customer history — and compiles it into a professional PDF you can submit to any payment processor. You review every page before you submit. Flat $19/month, no commissions, no success fees. Works with Shopify Payments, PayPal, Stripe, Klarna, and every other processor. Read-only access — we never touch your payments or write to your store.
 
 ---
 
-## Long Description (470 words)
+## Long Description (400–500 words)
 
-### Chargebacks are expensive — and most apps make it worse
+### Chargebacks shouldn't cost you twice.
 
-Every chargeback costs you the sale, a dispute fee, and hours of stress hunting for evidence. Then, if you win, the "chargeback apps" take 20–25% of the money you clawed back. You did all the work. They took the cut.
+Every time a customer files a chargeback, you don't just risk losing the sale — you pay a dispute fee whether you win or lose. And if you use other chargeback apps, you lose another 20–25% of the recovered amount on top of that. ChargebackReady is built on a simple premise: you did the work to make the sale, so you should keep every dollar of every dispute you win.
 
-ChargebackReady is different. Flat $19/month. You keep every dollar you win.
+### How it works — three steps
 
----
+1. **Enter your order number.** Type the order ID into ChargebackReady directly inside Shopify Admin. No copying and pasting between tabs.
 
-### How it works — three steps, 60 seconds
+2. **We compile all the evidence.** ChargebackReady pulls everything Shopify has recorded about that transaction — payment verification results, IP address, fraud risk assessment, full delivery tracking, customer order history, billing and shipping addresses, and a complete order timeline.
 
-**1. Enter your order ID.**
-Type the order number directly into ChargebackReady inside Shopify Admin. No copy-pasting between tabs, no exports, no spreadsheets.
+3. **Download your PDF and submit.** You see the complete evidence package before you download it. Submit it directly to your payment processor or bank. No middleman, no black box.
 
-**2. We compile all evidence from Shopify.**
-ChargebackReady pulls every piece of dispute evidence Shopify holds for that order — instantly, using read-only API access. Nothing is missed. Nothing is manually assembled.
+### What goes into the evidence package
 
-**3. Download your PDF and submit to your bank.**
-You get a professionally formatted, multi-page PDF evidence package ready to upload directly to your payment processor's dispute portal. Works with any processor, any bank.
+Winning a chargeback isn't about having one piece of evidence — it's about presenting a complete, credible picture. ChargebackReady compiles:
 
----
-
-### What evidence is compiled
-
-ChargebackReady pulls and formats the following data automatically:
-
-- **AVS verification** — Address Verification System result code with plain-English explanation
-- **CVV result** — Card verification result from the original transaction
-- **IP address** — The IP address recorded at the time of purchase
-- **Risk score** — Shopify's fraud risk assessment and contributing risk factors
-- **Delivery proof** — Carrier, tracking number, tracking URL, and shipment status
-- **Billing vs. shipping address match** — Clearly flagged match or mismatch
-- **Customer history** — Account age, total orders with your store, lifetime spend
-- **Full order contents** — Every line item, variant, quantity, and price
-
-Each section is clearly labelled for a bank or payment processor reviewer to understand at a glance.
-
----
+- **Payment verification:** AVS (address verification) result code, CVV result code, and payment gateway details
+- **Digital fingerprint:** IP address recorded by Shopify at checkout
+- **Fraud risk assessment:** Shopify's own risk score and every risk factor flagged on the order
+- **Delivery proof:** Tracking company, tracking number, tracking URL, fulfillment status, and estimated delivery date
+- **Customer history:** How long the customer has been with your store, total number of orders, and lifetime spend — proving they are a known, established customer (not a stolen card)
+- **Full order details:** Line items, quantities, prices, discounts, order notes, and complete billing and shipping addresses
 
 ### Why ChargebackReady is different
 
-Other tools are black boxes. You have no idea what evidence they submit on your behalf. ChargebackReady shows you the exact PDF before anything is submitted. You are in control.
+Most chargeback tools are either automated black boxes that file on your behalf (and take 20–25% when they win) or generic evidence guides that don't pull your actual order data. ChargebackReady is neither. You see exactly what goes into the PDF. You decide when and where to submit it. And the flat $19/month means your cost is the same whether you submit one dispute or fifty.
 
-And the pricing model is honest. $19 flat per month — unlimited disputes. No percentage taken from your winnings. No surprise fees when you actually win.
+ChargebackReady works with every payment processor — Shopify Payments, PayPal, Stripe, Klarna, and any other processor your store uses — because it generates a professional PDF document rather than integrating with any specific bank or processor.
 
-ChargebackReady works with every payment processor your customers use: Shopify Payments, PayPal, Stripe, Klarna, Afterpay, and any other processor that accepts documentary evidence.
+### Built on trust
 
----
-
-### Security and trust
-
-ChargebackReady uses **read-only** Shopify API access. It cannot write to your store, cannot modify orders, cannot process refunds, and cannot touch your payment settings. We never store your customers' order data — data is fetched, formatted into a PDF, and returned to you in real time.
-
----
+ChargebackReady uses read-only access to your Shopify store. It cannot issue refunds, modify orders, access your payment settings, or write anything to your store. Every piece of data it accesses is used solely to generate your evidence package and is never stored or shared.
 
 ### Pricing
 
-**$19/month** — flat rate, unlimited disputes
-**7-day free trial** — no charge for the first week
-**Cancel anytime** — one click through your Shopify Apps page, no lock-in
+**$19/month** — flat rate, no contracts, no commissions, no success fees.
+7-day free trial included. Cancel any time with one click from your Shopify Apps page.
 
 ---
 
-## Key Benefits (bullet points for listing)
+## Key Benefits (5 bullet points)
 
-- Keep 100% of every dispute you win — no commission or success fees ever
+- Keep 100% of every dispute you win — no commission or success fees, ever
 - Works with any payment processor — Shopify Payments, PayPal, Stripe, Klarna, and more
-- You review the exact PDF before submitting — no black box automation
-- Read-only access — we never write to your store or touch your payments
-- Cancel anytime — one click through your Shopify Apps page, no contracts
+- You review the exact PDF before submitting — no black box, no surprises
+- Read-only access — we never write to your store, issue refunds, or touch your payments
+- Cancel anytime — one click from your Shopify Apps page, no questions asked
 
 ---
 
-## Category
-- Store management
-- Orders and shipping
+## App Category
+Store management / Orders
 
-## Tags
-chargeback, dispute, evidence, fraud, payments, orders
+## Pricing
+- Free trial: 7 days
+- Plan name: ChargebackReady Pro
+- Price: $19.00 / month
+- Billing interval: Every 30 days
+
+---
+
+## Support
+
+- Support email: ogunwandetobi09@gmail.com
+- Developer: Eleven45 Ventures
+
+---
+
+## Screenshots needed (shoot these manually)
+
+1. **Main screen** — The order lookup UI with the "Generate evidence package" button
+2. **Order found** — After searching for an order, showing the order details card
+3. **PDF preview** — The generated PDF open in browser showing the cover page
+4. **PDF evidence page** — Interior page showing AVS/CVV/IP data section
+5. **Billing/trial screen** — The "Start free trial" banner (unsubscribed state)

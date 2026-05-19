@@ -23,6 +23,7 @@ const ORDER_EVIDENCE_QUERY = `#graphql
       id
       name
       createdAt
+      clientIp
       totalPriceSet {
         shopMoney {
           amount
@@ -51,13 +52,11 @@ const ORDER_EVIDENCE_QUERY = `#graphql
         }
       }
 
-      risk {
-        assessments {
-          riskLevel
-          facts {
-            description
-            sentiment
-          }
+      riskAssessments {
+        riskLevel
+        facts {
+          description
+          sentiment
         }
       }
 

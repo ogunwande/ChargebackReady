@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Privacy Policy — ChargebackReady</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 60px auto; padding: 20px; color: #333; line-height: 1.7; }
+    h1 { color: #1a1a2e; }
+    h2 { color: #1a1a2e; margin-top: 40px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+    th, td { border: 1px solid #ddd; padding: 10px 14px; text-align: left; }
+    th { background: #f5f5f5; }
+    a { color: #1a1a2e; }
+    .meta { color: #666; font-size: 14px; }
+  </style>
+</head>
+<body>
+
+<h1>Privacy Policy — ChargebackReady</h1>
+<p class="meta"><strong>Last updated:</strong> May 2026 &nbsp;|&nbsp; <strong>Company:</strong> Eleven45 Ventures &nbsp;|&nbsp; <strong>Contact:</strong> <a href="mailto:ogunwandetobi09@gmail.com">ogunwandetobi09@gmail.com</a></p>
+
+<h2>1. Introduction</h2>
+<p>ChargebackReady ("the App", "we", "us", "our") is a Shopify application developed and operated by Eleven45 Ventures. This Privacy Policy explains how we collect, use, and protect information when you install and use the App through the Shopify platform.</p>
+<p>By installing ChargebackReady, you agree to the practices described in this policy.</p>
+
+<h2>2. What Data We Collect</h2>
+<p>When you use ChargebackReady to generate a chargeback dispute evidence package, we access the following data from your Shopify store via the Shopify Admin API:</p>
+<p><strong>Order Data</strong></p>
+<ul>
+  <li>Order number, date, total amount, and currency</li>
+  <li>Financial status and fulfillment status</li>
+  <li>Payment gateway used</li>
+  <li>Payment verification codes (AVS result, CVV result) — accessed read-only, never stored</li>
+  <li>IP address recorded by Shopify at the time of checkout</li>
+  <li>Customer note on the order</li>
+</ul>
+<p><strong>Customer Data</strong></p>
+<ul>
+  <li>Customer first name, last name, email address, and phone number</li>
+  <li>Customer account creation date</li>
+  <li>Customer order history summary (total number of orders, total lifetime spend)</li>
+  <li>Billing address and shipping address</li>
+</ul>
+<p><strong>Fulfillment &amp; Delivery Data</strong></p>
+<ul>
+  <li>Tracking company, tracking number, and tracking URL</li>
+  <li>Fulfillment status and creation date</li>
+  <li>Estimated delivery date (if available)</li>
+</ul>
+<p><strong>Fraud Risk Data</strong></p>
+<ul>
+  <li>Shopify's risk assessment level and risk factors for the order (read-only, calculated by Shopify)</li>
+</ul>
+<p><strong>Line Item Data</strong></p>
+<ul>
+  <li>Product title, variant, quantity, price, SKU, and discount applied</li>
+</ul>
+
+<h2>3. How We Use This Data</h2>
+<p>All data listed above is accessed <strong>solely for the purpose of generating a chargeback dispute evidence PDF document</strong> at the explicit request of the merchant.</p>
+<p>Specifically, we use this data to:</p>
+<ul>
+  <li>Compile a structured evidence package suitable for submission to payment processors and banks in chargeback disputes</li>
+  <li>Display an order preview so the merchant can confirm they have the correct order before generating a PDF</li>
+  <li>Generate and deliver the PDF document to the merchant's browser</li>
+</ul>
+<p><strong>We do not use this data for any other purpose.</strong></p>
+
+<h2>4. Data Storage</h2>
+<p>ChargebackReady operates with a minimal data storage footprint:</p>
+<ul>
+  <li><strong>Session data:</strong> We store Shopify OAuth session tokens in a secure PostgreSQL database hosted on Railway (railway.app) solely to maintain your authenticated session. Session data does not include order data.</li>
+  <li><strong>Order data:</strong> We do <strong>not</strong> persistently store order data, customer data, or generated PDF content. Order information is fetched on demand, used to generate the document, and is not written to any database.</li>
+  <li><strong>PDF documents:</strong> Generated PDFs are delivered directly to your browser and are not stored on our servers.</li>
+  <li><strong>Payment card data:</strong> We do <strong>not</strong> store, log, or retain any payment card information. AVS and CVV result codes are passed through read-only from Shopify's API for inclusion in the evidence document only.</li>
+</ul>
+
+<h2>5. Data Sharing and Third Parties</h2>
+<p><strong>We do not sell, rent, or trade your data or your customers' data to any third party.</strong></p>
+<p>We share data with the following service providers only to the extent necessary to operate the App:</p>
+<table>
+  <tr><th>Provider</th><th>Purpose</th><th>Data Shared</th></tr>
+  <tr><td>Railway (railway.app)</td><td>Application hosting and PostgreSQL database</td><td>Shopify session tokens only</td></tr>
+  <tr><td>Shopify</td><td>Platform API access</td><td>OAuth tokens for your store</td></tr>
+</table>
+<p>We do not use advertising networks, analytics platforms, or data brokers.</p>
+
+<h2>6. API Access Scope</h2>
+<p>ChargebackReady uses <strong>read-only</strong> Shopify API access. The App requests the following OAuth scopes:</p>
+<ul>
+  <li><code>read_orders</code> — to fetch order details for evidence generation</li>
+  <li><code>read_customers</code> — to fetch customer identity information</li>
+  <li><code>read_fulfillments</code> — to fetch delivery and tracking information</li>
+</ul>
+<p>The App <strong>never</strong> requests write access to your store. It cannot create, modify, or cancel orders; issue refunds; modify customer records; access payment settings; or publish products.</p>
+
+<h2>7. Data Security</h2>
+<ul>
+  <li>All data in transit is encrypted using TLS/HTTPS</li>
+  <li>Database connections use encrypted connections</li>
+  <li>Shopify OAuth tokens are stored securely and never exposed in logs or client-side code</li>
+  <li>The App runs in an isolated server environment</li>
+</ul>
+
+<h2>8. Data Retention</h2>
+<p>Session tokens are retained until you uninstall the App, at which point they are deleted via the <code>app/uninstalled</code> webhook. Order data is never persistently stored. Generated PDFs are never stored on our servers.</p>
+<p>When you uninstall ChargebackReady, your session data is permanently deleted from our database within 48 hours.</p>
+
+<h2>9. Your Rights</h2>
+<p>As a merchant using ChargebackReady, you have the right to access, request deletion of, or request correction of any data we hold. To exercise these rights, contact us at <a href="mailto:ogunwandetobi09@gmail.com">ogunwandetobi09@gmail.com</a>.</p>
+
+<h2>10. Children's Privacy</h2>
+<p>ChargebackReady is a business-to-business application intended for Shopify merchants. It is not directed at individuals under the age of 18.</p>
+
+<h2>11. Changes to This Policy</h2>
+<p>We may update this Privacy Policy from time to time. We will notify merchants of material changes by updating the "Last updated" date above.</p>
+
+<h2>12. Contact</h2>
+<p><strong>Eleven45 Ventures</strong><br>
+Email: <a href="mailto:ogunwandetobi09@gmail.com">ogunwandetobi09@gmail.com</a></p>
+
+<hr>
+<p style="font-size:13px;color:#999"><em>ChargebackReady is not affiliated with Shopify Inc. Shopify is a trademark of Shopify Inc.</em></p>
+
+</body>
+</html>

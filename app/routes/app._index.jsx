@@ -9,6 +9,61 @@ export const loader = async ({ request }) => {
   return { subscribed };
 };
 
+export const action = async ({ request }) => {
+  const { admin } = await authenticate.admin(request);
+  const formData = await request.formData();
+  const raw = (formData.get("orderId") || "").toString().replace(/^#/, "").trim();
+
+  if (!raw || !/^\d{1,20}$/.test(raw)) {
+    return Response.json({ error: "invalid_input", message: "Invalid order ID" });
+  }
+
+  const res = await admin.graphql(`#graphql
+    query GetOrderPreview($query: String!) {
+      orders(first: 1, query: $query) {
+        edges {
+          node {
+            id
+            name
+            createdAt
+            displayFulfillmentStatus
+            totalPriceSet { shopMoney { amount currencyCode } }
+            customer { firstName lastName }
+            riskAssessments { assessments { riskLevel } }
+          }
+        }
+      }
+    }
+  `, { variables: { query: `name:#${raw}` } });
+
+  const data = await res.json();
+  const edges = data?.data?.orders?.edges || [];
+
+  if (edges.length === 0) {
+    return Response.json({ error: "not_found", message: "Order not found" });
+  }
+
+  const order = edges[0].node;
+  const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const d = new Date(order.createdAt);
+  const { amount, currencyCode } = order.totalPriceSet?.shopMoney || {};
+  const symbols = { USD:"$", GBP:"£", EUR:"€", CAD:"C$", AUD:"A$" };
+  const assessments = order.riskAssessments?.assessments || [];
+  const weight = { HIGH:3, MEDIUM:2, LOW:1, NONE:0 };
+  let highest = "NONE";
+  for (const a of assessments) if ((weight[a.riskLevel]||0) > (weight[highest]||0)) highest = a.riskLevel;
+
+  return Response.json({
+    numericId: order.id.replace("gid://shopify/Order/", ""),
+    orderNumber: order.name,
+    customerName: order.customer ? `${order.customer.firstName||""} ${order.customer.lastName||""}`.trim()||"Guest" : "Guest",
+    orderDate: `${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`,
+    amount: amount ? `${symbols[currencyCode]||"$"}${parseFloat(amount).toFixed(2)} ${currencyCode}` : "Not available",
+    riskLevel: highest==="NONE" ? "Not available" : highest.charAt(0)+highest.slice(1).toLowerCase(),
+    fulfillmentStatus: order.displayFulfillmentStatus || "Unknown",
+  });
+};
+
 function RiskBadge({ level }) {
   const tone =
     level === "High" ? "critical" : level === "Medium" ? "warning" : "success";
@@ -32,7 +87,7 @@ export default function Index() {
     ) {
       retried.current = true;
       const val = inputRef.current.value.replace(/^#/, "").trim();
-      fetcher.load(`/app/api/order-preview/${encodeURIComponent(val)}`);
+      fetcher.submit({ orderId: val }, { method: "post", action: "/app" });
     }
     if (fetcher.data && fetcher.data.error !== "auth_required") {
       retried.current = false;
@@ -47,7 +102,7 @@ export default function Index() {
     const val = inputRef.current?.value || "";
     const raw = val.replace(/^#/, "").trim();
     if (!raw) return;
-    fetcher.load(`/app/api/order-preview/${encodeURIComponent(raw)}`);
+    fetcher.submit({ orderId: raw }, { method: "post", action: "/app" });
   }, [fetcher]);
 
   async function handleDownload() {

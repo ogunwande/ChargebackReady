@@ -85,7 +85,14 @@ export const loader = async ({ request, params }) => {
       { status: 401, headers: { "Content-Type": "application/json" } },
     );
   }
-  const { admin } = adminContext;
+  const { admin, session } = adminContext;
+
+  if (!session?.shop) {
+    return new Response(
+      JSON.stringify({ error: "auth_required", message: "Session expired. Please refresh and try again." }),
+      { status: 401, headers: { "Content-Type": "application/json" } },
+    );
+  }
 
   const raw = params.orderId.replace(/^#/, "").trim();
 

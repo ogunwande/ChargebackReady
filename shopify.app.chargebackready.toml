@@ -22,5 +22,6 @@ api_version = "2026-04"
   topics = [ "app_subscriptions/update" ]
   uri = "https://chargebackready-production.up.railway.app/webhooks/app/subscriptions/update"
 
+
 [build]
 automatically_update_urls_on_dev = true

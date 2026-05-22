@@ -11,13 +11,13 @@ export const loader = async ({ request }) => {
 };
 
 export const action = async ({ request }) => {
-  const { admin, billing } = await authenticate.admin(request);
+  const { admin, billing, session } = await authenticate.admin(request);
   const formData = await request.formData();
   const actionType = formData.get("_action");
 
   if (actionType === "start_billing") {
-    const url = new URL(request.url);
-    const returnUrl = `https://${url.host}/app`;
+    const storeName = session.shop.replace('.myshopify.com', '');
+    const returnUrl = `https://admin.shopify.com/store/${storeName}/apps/chargebackready2`;
 
     const { confirmationUrl } = await billing.request({
       plan: "ChargebackReady Pro",
@@ -101,11 +101,27 @@ export default function Index() {
   const billingFetcher = useFetcher();
   const inputRef = useRef(null);
   const [downloading, setDownloading] = useState(false);
+  const [restoredResult, setRestoredResult] = useState(null);
 
   const retried = useRef(false);
 
+  const isLoading = fetcher.state === "loading" || fetcher.state === "submitting";
+  const result = (fetcher.data && !fetcher.data.error ? fetcher.data : null) || restoredResult;
+  const hasError = fetcher.data?.error != null;
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem('pendingOrder');
+    if (saved) {
+      setRestoredResult(JSON.parse(saved));
+      sessionStorage.removeItem('pendingOrder');
+    }
+  }, []);
+
   useEffect(() => {
     if (billingFetcher.data?.confirmationUrl) {
+      if (result) {
+        sessionStorage.setItem('pendingOrder', JSON.stringify(result));
+      }
       window.open(billingFetcher.data.confirmationUrl, '_top');
     }
   }, [billingFetcher.data]);
@@ -124,10 +140,6 @@ export default function Index() {
       retried.current = false;
     }
   }, [fetcher.data]);
-
-  const isLoading = fetcher.state === "loading" || fetcher.state === "submitting";
-  const result = fetcher.data && !fetcher.data.error ? fetcher.data : null;
-  const hasError = fetcher.data?.error != null;
 
   const handleSearch = useCallback(() => {
     const val = inputRef.current?.value || "";

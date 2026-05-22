@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback, useEffect } from "react";
-import { useFetcher, useLoaderData } from "react-router";
+import { useFetcher, useLoaderData, useSubmit } from "react-router";
 import { authenticate } from "../shopify.server";
 import { hasActiveSubscription } from "../utils/subscription.server";
 
@@ -10,8 +10,23 @@ export const loader = async ({ request }) => {
 };
 
 export const action = async ({ request }) => {
-  const { admin } = await authenticate.admin(request);
+  const { admin, billing } = await authenticate.admin(request);
   const formData = await request.formData();
+  const actionType = formData.get("_action");
+
+  // Handle billing
+  if (actionType === "start_billing") {
+    await billing.require({
+      plans: ["ChargebackReady Pro"],
+      isTest: true,
+      onFailure: async () => billing.request({
+        plan: "ChargebackReady Pro",
+      }),
+    });
+    return Response.json({ success: true });
+  }
+
+  // Handle order lookup
   const raw = (formData.get("orderId") || "").toString().replace(/^#/, "").trim();
 
   if (!raw || !/^\d{1,20}$/.test(raw)) {
@@ -73,6 +88,7 @@ function RiskBadge({ level }) {
 export default function Index() {
   const { subscribed } = useLoaderData();
   const fetcher = useFetcher();
+  const submit = useSubmit();
   const inputRef = useRef(null);
   const [downloading, setDownloading] = useState(false);
 
@@ -86,14 +102,14 @@ export default function Index() {
     ) {
       retried.current = true;
       const val = inputRef.current.value.replace(/^#/, "").trim();
-      fetcher.submit({ orderId: val }, { method: "post", action: "/app?index" });
+      fetcher.submit({ orderId: val, _action: "order_lookup" }, { method: "post", action: "/app?index" });
     }
     if (fetcher.data && fetcher.data.error !== "auth_required") {
       retried.current = false;
     }
   }, [fetcher.data]);
 
-  const isLoading = fetcher.state === "loading";
+  const isLoading = fetcher.state === "loading" || fetcher.state === "submitting";
   const result = fetcher.data && !fetcher.data.error ? fetcher.data : null;
   const hasError = fetcher.data?.error != null;
 
@@ -101,7 +117,10 @@ export default function Index() {
     const val = inputRef.current?.value || "";
     const raw = val.replace(/^#/, "").trim();
     if (!raw) return;
-    fetcher.submit({ orderId: raw }, { method: "post", action: "/app?index" });
+    fetcher.submit(
+      { orderId: raw, _action: "order_lookup" },
+      { method: "post", action: "/app?index" },
+    );
   }, [fetcher]);
 
   async function handleDownload() {
@@ -239,7 +258,12 @@ export default function Index() {
                   </s-paragraph>
                   <s-button
                     slot="primaryAction"
-                    onClick={() => { window.top.location.href = '/app/billing'; }}
+                    onClick={() => {
+                      submit(
+                        { _action: "start_billing" },
+                        { method: "post", action: "/app?index" },
+                      );
+                    }}
                   >
                     Start free trial — no charge for 7 days
                   </s-button>

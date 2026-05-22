@@ -1,6 +1,7 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import { useFetcher, useLoaderData, useRouteError } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
+import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import { hasActiveSubscription } from "../utils/subscription.server";
 
@@ -86,6 +87,7 @@ function RiskBadge({ level }) {
 export default function Index() {
   const { subscribed } = useLoaderData();
   const fetcher = useFetcher();
+  const shopify = useAppBridge();
   const inputRef = useRef(null);
   const [downloading, setDownloading] = useState(false);
 
@@ -256,7 +258,7 @@ export default function Index() {
                   <s-button
                     slot="primaryAction"
                     onClick={() => {
-                      open('/app/billing', '_top');
+                      shopify.navigate('/app/billing');
                     }}
                   >
                     Start free trial — no charge for 7 days

@@ -1,7 +1,6 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import { useFetcher, useLoaderData, useRouteError } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
-import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import { hasActiveSubscription } from "../utils/subscription.server";
 
@@ -12,11 +11,23 @@ export const loader = async ({ request }) => {
 };
 
 export const action = async ({ request }) => {
-  const { admin } = await authenticate.admin(request);
+  const { admin, billing } = await authenticate.admin(request);
   const formData = await request.formData();
   const actionType = formData.get("_action");
 
-  // Handle billing
+  if (actionType === "start_billing") {
+    const url = new URL(request.url);
+    const returnUrl = `https://${url.host}/app`;
+
+    const { confirmationUrl } = await billing.request({
+      plan: "ChargebackReady Pro",
+      isTest: true,
+      returnUrl,
+    });
+
+    return Response.json({ confirmationUrl });
+  }
+
   // Handle order lookup
   const raw = (formData.get("orderId") || "").toString().replace(/^#/, "").trim();
 
@@ -87,11 +98,17 @@ function RiskBadge({ level }) {
 export default function Index() {
   const { subscribed } = useLoaderData();
   const fetcher = useFetcher();
-  const shopify = useAppBridge();
+  const billingFetcher = useFetcher();
   const inputRef = useRef(null);
   const [downloading, setDownloading] = useState(false);
 
   const retried = useRef(false);
+
+  useEffect(() => {
+    if (billingFetcher.data?.confirmationUrl) {
+      window.open(billingFetcher.data.confirmationUrl, '_top');
+    }
+  }, [billingFetcher.data]);
 
   useEffect(() => {
     if (
@@ -258,7 +275,10 @@ export default function Index() {
                   <s-button
                     slot="primaryAction"
                     onClick={() => {
-                      shopify.navigate('/app/billing');
+                      billingFetcher.submit(
+                        { _action: "start_billing" },
+                        { method: "post" },
+                      );
                     }}
                   >
                     Start free trial — no charge for 7 days

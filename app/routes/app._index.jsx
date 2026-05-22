@@ -7,7 +7,9 @@ import { hasActiveSubscription } from "../utils/subscription.server";
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
   const subscribed = await hasActiveSubscription(session.shop);
-  return { subscribed };
+  const url = new URL(request.url);
+  const returnOrderId = url.searchParams.get('orderId') || null;
+  return { subscribed, returnOrderId };
 };
 
 export const action = async ({ request }) => {
@@ -16,8 +18,9 @@ export const action = async ({ request }) => {
   const actionType = formData.get("_action");
 
   if (actionType === "start_billing") {
+    const orderId = formData.get("orderId") || "";
     const storeName = session.shop.replace('.myshopify.com', '');
-    const returnUrl = `https://admin.shopify.com/store/${storeName}/apps/chargebackready2`;
+    const returnUrl = `https://admin.shopify.com/store/${storeName}/apps/chargebackready2${orderId ? `?orderId=${orderId}` : ''}`;
 
     const { confirmationUrl } = await billing.request({
       plan: "ChargebackReady Pro",
@@ -96,7 +99,7 @@ function RiskBadge({ level }) {
 }
 
 export default function Index() {
-  const { subscribed } = useLoaderData();
+  const { subscribed, returnOrderId } = useLoaderData();
   const fetcher = useFetcher();
   const billingFetcher = useFetcher();
   const inputRef = useRef(null);
@@ -116,6 +119,16 @@ export default function Index() {
       sessionStorage.removeItem('pendingOrder');
     }
   }, []);
+
+  useEffect(() => {
+    if (returnOrderId && inputRef.current) {
+      inputRef.current.value = returnOrderId;
+      fetcher.submit(
+        { orderId: returnOrderId, _action: "order_lookup" },
+        { method: "post" },
+      );
+    }
+  }, [returnOrderId]);
 
   useEffect(() => {
     if (billingFetcher.data?.confirmationUrl) {
@@ -288,7 +301,7 @@ export default function Index() {
                     slot="primaryAction"
                     onClick={() => {
                       billingFetcher.submit(
-                        { _action: "start_billing" },
+                        { _action: "start_billing", orderId: result?.numericId || "" },
                         { method: "post" },
                       );
                     }}

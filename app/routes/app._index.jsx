@@ -87,7 +87,7 @@ export default function Index() {
     ) {
       retried.current = true;
       const val = inputRef.current.value.replace(/^#/, "").trim();
-      fetcher.submit({ orderId: val }, { method: "post", action: "/app" });
+      fetcher.submit({ orderId: val }, { method: "post", action: "/app?index" });
     }
     if (fetcher.data && fetcher.data.error !== "auth_required") {
       retried.current = false;
@@ -102,7 +102,7 @@ export default function Index() {
     const val = inputRef.current?.value || "";
     const raw = val.replace(/^#/, "").trim();
     if (!raw) return;
-    fetcher.submit({ orderId: raw }, { method: "post", action: "/app" });
+    fetcher.submit({ orderId: raw }, { method: "post", action: "/app?index" });
   }, [fetcher]);
 
   async function handleDownload() {

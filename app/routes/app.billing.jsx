@@ -1,6 +1,6 @@
-import { authenticate } from "../shopify.server";
-import { boundary } from "@shopify/shopify-app-react-router/server";
 import { useRouteError } from "react-router";
+import { boundary } from "@shopify/shopify-app-react-router/server";
+import { authenticate } from "../shopify.server";
 
 export const loader = async ({ request }) => {
   const { billing } = await authenticate.admin(request);
@@ -18,17 +18,16 @@ export const loader = async ({ request }) => {
     }),
   });
 
-  const { redirect } = await authenticate.admin(request);
-  return redirect("/app");
-};
-
-export const headers = (headersArgs) => {
-  return boundary.headers(headersArgs);
+  return null;
 };
 
 export function ErrorBoundary() {
   return boundary.error(useRouteError());
 }
+
+export const headers = (headersArgs) => {
+  return boundary.headers(headersArgs);
+};
 
 export default function BillingPage() {
   return null;

@@ -1,5 +1,6 @@
 import { useRef, useState, useCallback, useEffect } from "react";
-import { useFetcher, useLoaderData } from "react-router";
+import { useFetcher, useLoaderData, useRouteError } from "react-router";
+import { boundary } from "@shopify/shopify-app-react-router/server";
 import { authenticate } from "../shopify.server";
 import { hasActiveSubscription } from "../utils/subscription.server";
 
@@ -66,6 +67,14 @@ export const action = async ({ request }) => {
     riskLevel: highest==="NONE" ? "Not available" : highest.charAt(0)+highest.slice(1).toLowerCase(),
     fulfillmentStatus: order.displayFulfillmentStatus || "Unknown",
   });
+};
+
+export function ErrorBoundary() {
+  return boundary.error(useRouteError());
+}
+
+export const headers = (headersArgs) => {
+  return boundary.headers(headersArgs);
 };
 
 function RiskBadge({ level }) {

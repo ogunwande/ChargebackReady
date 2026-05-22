@@ -3,7 +3,7 @@
 client_id = "2a548e84e42effb3371d4ad620b1a5d0"
 application_url = "https://chargebackready-production.up.railway.app"
 embedded = true
-name = "ChargebackReady2"
+name = "ChargebackReady"
 
 [access_scopes]
 scopes = "read_orders,read_customers,read_fulfillments"

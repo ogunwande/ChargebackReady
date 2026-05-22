@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback, useEffect } from "react";
-import { useFetcher, useLoaderData, useNavigate } from "react-router";
+import { useFetcher, useLoaderData } from "react-router";
 import { authenticate } from "../shopify.server";
 import { hasActiveSubscription } from "../utils/subscription.server";
 
@@ -73,7 +73,6 @@ function RiskBadge({ level }) {
 export default function Index() {
   const { subscribed } = useLoaderData();
   const fetcher = useFetcher();
-  const navigate = useNavigate();
   const inputRef = useRef(null);
   const [downloading, setDownloading] = useState(false);
 
@@ -240,7 +239,7 @@ export default function Index() {
                   </s-paragraph>
                   <s-button
                     slot="primaryAction"
-                    onClick={() => navigate('/app/billing')}
+                    onClick={() => { window.top.location.href = '/app/billing'; }}
                   >
                     Start free trial — no charge for 7 days
                   </s-button>

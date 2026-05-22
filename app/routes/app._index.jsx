@@ -18,22 +18,18 @@ export const action = async ({ request }) => {
   if (actionType === "start_billing") {
     const url = new URL(request.url);
     const returnUrl = `https://${url.host}/app`;
-    try {
-      await billing.require({
-        plans: ["ChargebackReady Pro"],
+
+    await billing.require({
+      plans: ["ChargebackReady Pro"],
+      isTest: true,
+      onFailure: async () => billing.request({
+        plan: "ChargebackReady Pro",
         isTest: true,
-        onFailure: async () => billing.request({
-          plan: "ChargebackReady Pro",
-          isTest: true,
-          returnUrl,
-        }),
-      });
-      return Response.json({ subscribed: true });
-    } catch (error) {
-      if (error instanceof Response) throw error;
-      console.error("[Billing Error]", error.message);
-      return Response.json({ error: "billing_failed", message: error.message }, { status: 500 });
-    }
+        returnUrl,
+      }),
+    });
+
+    return Response.json({ subscribed: true });
   }
 
   // Handle order lookup

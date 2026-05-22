@@ -301,7 +301,7 @@ export default function Index() {
                     slot="primaryAction"
                     onClick={() => {
                       billingFetcher.submit(
-                        { _action: "start_billing", orderId: result?.numericId || "" },
+                        { _action: "start_billing", orderId: result?.orderNumber?.replace('#', '') || "" },
                         { method: "post" },
                       );
                     }}

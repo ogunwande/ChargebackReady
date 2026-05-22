@@ -16,6 +16,8 @@ export const action = async ({ request }) => {
 
   // Handle billing
   if (actionType === "start_billing") {
+    const url = new URL(request.url);
+    const returnUrl = `${url.protocol}//${url.host}/app`;
     try {
       await billing.require({
         plans: ["ChargebackReady Pro"],
@@ -23,6 +25,7 @@ export const action = async ({ request }) => {
         onFailure: async () => billing.request({
           plan: "ChargebackReady Pro",
           isTest: true,
+          returnUrl,
         }),
       });
       return Response.json({ subscribed: true });

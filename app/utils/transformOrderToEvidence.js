@@ -127,7 +127,7 @@ export function transformOrderToEvidence(rawGraphQLResponse) {
   const customer = order.customer || {};
   const billing = order.billingAddress || null;
   const shipping = order.shippingAddress || null;
-  const assessments = order.riskAssessments || order.risk?.assessments || [];
+  const assessments = order.risk?.assessments || [];
   const cardDetails = getCardDetails(order.transactions || []);
   const avsCode = cardDetails?.avsResultCode || null;
   const cvvCode = cardDetails?.cvvResultCode || null;

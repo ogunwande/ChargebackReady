@@ -52,11 +52,13 @@ const ORDER_EVIDENCE_QUERY = `#graphql
         }
       }
 
-      riskAssessments {
-        riskLevel
-        facts {
-          description
-          sentiment
+      risk {
+        assessments {
+          riskLevel
+          facts {
+            description
+            sentiment
+          }
         }
       }
 

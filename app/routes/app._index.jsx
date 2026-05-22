@@ -29,7 +29,7 @@ export const action = async ({ request }) => {
             displayFulfillmentStatus
             totalPriceSet { shopMoney { amount currencyCode } }
             customer { firstName lastName }
-            riskAssessments { assessments { riskLevel } }
+            risk { assessments { riskLevel } }
           }
         }
       }
@@ -48,7 +48,7 @@ export const action = async ({ request }) => {
   const d = new Date(order.createdAt);
   const { amount, currencyCode } = order.totalPriceSet?.shopMoney || {};
   const symbols = { USD:"$", GBP:"£", EUR:"€", CAD:"C$", AUD:"A$" };
-  const assessments = order.riskAssessments?.assessments || [];
+  const assessments = order.risk?.assessments || [];
   const weight = { HIGH:3, MEDIUM:2, LOW:1, NONE:0 };
   let highest = "NONE";
   for (const a of assessments) if ((weight[a.riskLevel]||0) > (weight[highest]||0)) highest = a.riskLevel;

@@ -1,15 +1,163 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>ChargebackReady</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ChargebackReady — Chargeback Dispute Evidence for Shopify</title>
+  <meta name="description" content="Generate professional chargeback dispute evidence packages in 60 seconds. Keep 100% of every win. $19/month flat fee.">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #1a1a2e; }
+
+    nav { background: #1a1a2e; padding: 16px 40px; display: flex; align-items: center; justify-content: space-between; }
+    nav .logo { color: #fff; font-size: 20px; font-weight: 700; text-decoration: none; }
+    nav a.cta { background: #4CAF50; color: #fff; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; }
+
+    .hero { background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%); color: #fff; padding: 80px 40px; text-align: center; }
+    .hero h1 { font-size: 48px; font-weight: 800; margin-bottom: 20px; line-height: 1.1; }
+    .hero h1 span { color: #4CAF50; }
+    .hero p { font-size: 20px; color: #94a3b8; max-width: 600px; margin: 0 auto 40px; line-height: 1.6; }
+    .hero .badges { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; }
+    .hero .badge { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #cbd5e1; padding: 8px 16px; border-radius: 20px; font-size: 14px; }
+    .hero .btn { background: #4CAF50; color: #fff; padding: 16px 32px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 18px; display: inline-block; }
+
+    .features { padding: 80px 40px; max-width: 1100px; margin: 0 auto; }
+    .features h2 { text-align: center; font-size: 36px; margin-bottom: 48px; }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+    .feature-card { background: #f8fafc; border-radius: 16px; padding: 32px; }
+    .feature-card .icon { font-size: 36px; margin-bottom: 16px; }
+    .feature-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+    .feature-card p { color: #64748b; line-height: 1.6; font-size: 15px; }
+
+    .how { background: #f8fafc; padding: 80px 40px; }
+    .how h2 { text-align: center; font-size: 36px; margin-bottom: 48px; }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; max-width: 900px; margin: 0 auto; }
+    .step { text-align: center; }
+    .step .num { width: 56px; height: 56px; background: #1a1a2e; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800; margin: 0 auto 16px; }
+    .step h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .step p { color: #64748b; font-size: 14px; line-height: 1.6; }
+
+    .pricing { padding: 80px 40px; text-align: center; }
+    .pricing h2 { font-size: 36px; margin-bottom: 16px; }
+    .pricing p { color: #64748b; margin-bottom: 40px; font-size: 18px; }
+    .price-card { background: #1a1a2e; color: #fff; border-radius: 20px; padding: 48px; max-width: 400px; margin: 0 auto; }
+    .price-card .price { font-size: 56px; font-weight: 800; color: #4CAF50; }
+    .price-card .price span { font-size: 20px; color: #94a3b8; }
+    .price-card ul { list-style: none; margin: 24px 0 32px; text-align: left; }
+    .price-card ul li { padding: 8px 0; color: #cbd5e1; font-size: 15px; }
+    .price-card ul li::before { content: "✓ "; color: #4CAF50; font-weight: 700; }
+    .price-card .btn { background: #4CAF50; color: #fff; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 16px; display: inline-block; width: 100%; }
+
+    footer { background: #1a1a2e; color: #64748b; padding: 32px 40px; text-align: center; font-size: 14px; }
+    footer a { color: #94a3b8; text-decoration: none; margin: 0 12px; }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 32px; }
+      .features-grid, .steps { grid-template-columns: 1fr; }
+      nav { padding: 16px 20px; }
+    }
+  </style>
 </head>
-<body style="font-family:system-ui;max-width:600px;margin:60px auto;padding:20px;color:#333">
-  <h1>ChargebackReady</h1>
-  <p>Generate professional chargeback dispute evidence in 60 seconds.</p>
-  <ul>
-    <li><a href="privacy-policy.html">Privacy Policy</a></li>
-  </ul>
+<body>
+
+<nav>
+  <a href="/" class="logo">⚡ ChargebackReady</a>
+  <a href="https://apps.shopify.com/chargebackready" class="cta">Install on Shopify</a>
+</nav>
+
+<section class="hero">
+  <h1>Win Chargebacks.<br><span>Keep 100% of Every Win.</span></h1>
+  <p>Generate a professional dispute evidence package for any Shopify order in 60 seconds. Works with any payment processor.</p>
+  <div class="badges">
+    <span class="badge">⚡ 60-second evidence packages</span>
+    <span class="badge">💰 Flat $19/month — no commissions</span>
+    <span class="badge">🔒 Read-only store access</span>
+    <span class="badge">🌐 Any payment processor</span>
+  </div>
+  <a href="https://apps.shopify.com/chargebackready" class="btn">Start 7-Day Free Trial →</a>
+</section>
+
+<section class="features">
+  <h2>Everything you need to fight chargebacks</h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="icon">📄</div>
+      <h3>Professional PDF Evidence</h3>
+      <p>Generate a complete dispute evidence package including order details, customer info, IP address, risk score, fulfillment tracking, and more.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">💰</div>
+      <h3>Keep 100% of Every Win</h3>
+      <p>Flat $19/month — no commission, no success fees, no hidden charges. Other apps take 25% of everything you recover.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🌐</div>
+      <h3>Any Payment Processor</h3>
+      <p>Works with Shopify Payments, PayPal, Stripe, Klarna, and any other processor. You submit the evidence directly to your bank.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">👁️</div>
+      <h3>See Evidence Before Submitting</h3>
+      <p>Review the exact PDF before you submit anything. No black-box automation — you stay in control of every dispute.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🔒</div>
+      <h3>Read-Only Access</h3>
+      <p>ChargebackReady never writes to your store, never processes refunds, and never touches your payment settings.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">⚡</div>
+      <h3>60-Second Setup</h3>
+      <p>Install, enter your order number, download your PDF. No configuration, no onboarding, no training required.</p>
+    </div>
+  </div>
+</section>
+
+<section class="how">
+  <h2>How it works</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="num">1</div>
+      <h3>Enter your order ID</h3>
+      <p>Find it in Shopify Admin under Orders. Enter the order number and we pull all the evidence automatically.</p>
+    </div>
+    <div class="step">
+      <div class="num">2</div>
+      <h3>We compile all evidence</h3>
+      <p>AVS, CVV, IP address, risk score, delivery tracking, customer history, billing address — everything your bank needs.</p>
+    </div>
+    <div class="step">
+      <div class="num">3</div>
+      <h3>Download and submit</h3>
+      <p>Download your professional PDF and submit it directly to your payment processor or bank.</p>
+    </div>
+  </div>
+</section>
+
+<section class="pricing">
+  <h2>Simple, honest pricing</h2>
+  <p>One plan. No commissions. No surprises.</p>
+  <div class="price-card">
+    <div class="price">$19<span>/month</span></div>
+    <ul>
+      <li>Unlimited evidence packages</li>
+      <li>Works with any payment processor</li>
+      <li>Professional PDF reports</li>
+      <li>Full order history access</li>
+      <li>7-day free trial</li>
+      <li>Cancel anytime</li>
+    </ul>
+    <a href="https://apps.shopify.com/chargebackready" class="btn">Start Free Trial →</a>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Eleven45 Ventures · ChargebackReady</p>
+  <p style="margin-top: 12px;">
+    <a href="/ChargebackReady/privacy-policy.html">Privacy Policy</a>
+    <a href="mailto:ogunwandetobi09@gmail.com">Support</a>
+  </p>
+</footer>
+
 </body>
 </html>

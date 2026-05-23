@@ -22,6 +22,10 @@ api_version = "2026-04"
   topics = [ "app_subscriptions/update" ]
   uri = "https://chargebackready-production.up.railway.app/webhooks/app/subscriptions/update"
 
+  [[webhooks.subscriptions]]
+  compliance_topics = ["customers/data_request", "customers/redact", "shop/redact"]
+  uri = "https://chargebackready-production.up.railway.app/webhooks/gdpr"
+
 
 [build]
 automatically_update_urls_on_dev = true

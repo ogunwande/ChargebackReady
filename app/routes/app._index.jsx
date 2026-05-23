@@ -104,6 +104,7 @@ export default function Index() {
   const billingFetcher = useFetcher();
   const inputRef = useRef(null);
   const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState(null);
   const [restoredResult, setRestoredResult] = useState(null);
 
   const isLoading = fetcher.state === "loading" || fetcher.state === "submitting";
@@ -150,10 +151,11 @@ export default function Index() {
   async function handleDownload() {
     if (!result) return;
     setDownloading(true);
+    setDownloadError(null);
     try {
       const response = await fetch(`/app/orders/${result.numericId}/pdf`);
       if (!response.ok) {
-        alert("Failed to generate PDF. Please try again.");
+        setDownloadError("Failed to generate PDF. Please try again.");
         return;
       }
       const blob = await response.blob();
@@ -166,7 +168,7 @@ export default function Index() {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch {
-      alert("Failed to generate PDF. Please try again.");
+      setDownloadError("Failed to generate PDF. Please try again.");
     } finally {
       setDownloading(false);
     }
@@ -262,6 +264,12 @@ export default function Index() {
                 <s-text>{result.fulfillmentStatus}</s-text>
               </s-stack>
             </s-stack>
+
+            {downloadError && (
+              <s-banner tone="critical">
+                <s-paragraph>{downloadError}</s-paragraph>
+              </s-banner>
+            )}
 
             {subscribed ? (
               <s-button

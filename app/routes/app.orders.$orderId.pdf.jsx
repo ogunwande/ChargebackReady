@@ -1,7 +1,17 @@
+import { useRouteError } from "react-router";
+import { boundary } from "@shopify/shopify-app-react-router/server";
 import { authenticate } from "../shopify.server";
 import { transformOrderToEvidence } from "../utils/transformOrderToEvidence";
 import { generateChargebackPDF } from "../utils/generateChargebackPDF";
 import { hasActiveSubscription } from "../utils/subscription.server";
+
+export function ErrorBoundary() {
+  return boundary.error(useRouteError());
+}
+
+export const headers = (headersArgs) => {
+  return boundary.headers(headersArgs);
+};
 
 async function graphqlWithRetry(admin, query, variables) {
   const res = await admin.graphql(query, { variables });

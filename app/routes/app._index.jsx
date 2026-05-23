@@ -106,8 +106,6 @@ export default function Index() {
   const [downloading, setDownloading] = useState(false);
   const [restoredResult, setRestoredResult] = useState(null);
 
-  const retried = useRef(false);
-
   const isLoading = fetcher.state === "loading" || fetcher.state === "submitting";
   const result = (fetcher.data && !fetcher.data.error ? fetcher.data : null) || restoredResult;
   const hasError = fetcher.data?.error != null;
@@ -138,21 +136,6 @@ export default function Index() {
       window.open(billingFetcher.data.confirmationUrl, '_top');
     }
   }, [billingFetcher.data]);
-
-  useEffect(() => {
-    if (
-      fetcher.data?.error === "auth_required" &&
-      !retried.current &&
-      inputRef.current?.value
-    ) {
-      retried.current = true;
-      const val = inputRef.current.value.replace(/^#/, "").trim();
-      fetcher.submit({ orderId: val, _action: "order_lookup" }, { method: "post", action: "/app?index" });
-    }
-    if (fetcher.data && fetcher.data.error !== "auth_required") {
-      retried.current = false;
-    }
-  }, [fetcher.data]);
 
   const handleSearch = useCallback(() => {
     const val = inputRef.current?.value || "";

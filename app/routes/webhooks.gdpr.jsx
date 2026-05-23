@@ -13,10 +13,13 @@ export const action = async ({ request }) => {
       // We don't store individual customer data — nothing to delete
       break;
     case "SHOP_REDACT":
-      // Delete all shop data
-      await db.subscription.deleteMany({ where: { shopDomain: shop } });
-      await db.session.deleteMany({ where: { shop } });
-      console.log(`[GDPR] Deleted all data for ${shop}`);
+      try {
+        await db.subscription.deleteMany({ where: { shopDomain: shop } });
+        await db.session.deleteMany({ where: { shop } });
+        console.log(`[GDPR] Deleted all data for ${shop}`);
+      } catch (error) {
+        console.error(`[GDPR] Error deleting data for ${shop}:`, error.message);
+      }
       break;
   }
 

@@ -24,7 +24,7 @@ export const action = async ({ request }) => {
 
     const { confirmationUrl } = await billing.request({
       plan: "ChargebackReady Pro",
-      isTest: true,
+      isTest: false,
       returnUrl,
     });
 

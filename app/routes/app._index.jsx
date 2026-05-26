@@ -1,5 +1,6 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import { useFetcher, useLoaderData, useRouteError } from "react-router";
+import { useAppBridge } from "@shopify/app-bridge-react";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { authenticate } from "../shopify.server";
 import { hasActiveSubscription } from "../utils/subscription.server";
@@ -100,6 +101,7 @@ function RiskBadge({ level }) {
 
 export default function Index() {
   const { subscribed, returnOrderId } = useLoaderData();
+  const shopify = useAppBridge();
   const fetcher = useFetcher();
   const billingFetcher = useFetcher();
   const inputRef = useRef(null);
@@ -153,7 +155,10 @@ export default function Index() {
     setDownloading(true);
     setDownloadError(null);
     try {
-      const response = await fetch(`/app/orders/${result.numericId}/pdf`);
+      const sessionToken = await shopify.idToken();
+      const response = await fetch(`/app/orders/${result.numericId}/pdf`, {
+        headers: { Authorization: `Bearer ${sessionToken}` },
+      });
       if (!response.ok) {
         setDownloadError("Failed to generate PDF. Please try again.");
         return;

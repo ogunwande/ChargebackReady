@@ -156,7 +156,7 @@ export default function Index() {
     setDownloadError(null);
     try {
       const sessionToken = await shopify.idToken();
-      const response = await fetch(`/app/orders/${result.numericId}/pdf`, {
+      const response = await fetch(`/api/orders/${result.numericId}/pdf`, {
         headers: { Authorization: `Bearer ${sessionToken}` },
       });
       if (!response.ok) {
